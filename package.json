@@ -1,0 +1,23 @@
+{
+  "name": "bluefrosttech-page",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/optimize-images.mjs && vite",
+    "prebuild": "node scripts/optimize-images.mjs",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && node scripts/deploy-ftp.mjs"
+  },
+  "devDependencies": {
+    "basic-ftp": "^5.0.5",
+    "dotenv": "^16.4.7",
+    "sharp": "^0.33.5",
+    "ssh2-sftp-client": "^12.1.1",
+    "vite": "^6.0.3"
+  },
+  "dependencies": {
+    "@fontsource/dm-sans": "^5.2.5",
+    "@fontsource/syne": "^5.2.5"
+  }
+}
