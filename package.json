@@ -7,7 +7,8 @@
     "prebuild": "node scripts/optimize-images.mjs",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && node scripts/deploy-ftp.mjs"
+    "deploy": "npm run build && echo \"Deploy automatico: commit e push su main; GitHub Actions pubblica dist/.\"",
+    "deploy:namecheap": "npm run build && node scripts/deploy-ftp.mjs"
   },
   "devDependencies": {
     "basic-ftp": "^5.0.5",

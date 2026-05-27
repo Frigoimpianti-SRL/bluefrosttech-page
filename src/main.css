@@ -52,11 +52,11 @@ nav.scrolled{
 }
 .hero-bg{
   position:absolute;inset:0;z-index:0;
-  background-image:url('photos/20150512_111554-1200w.jpg');
+  background-image:url('../photos/20150512_111554-1200w.jpg');
   background-image:image-set(
-    url('photos/20150512_111554-1200w.avif') type('image/avif'),
-    url('photos/20150512_111554-1200w.webp') type('image/webp'),
-    url('photos/20150512_111554-1200w.jpg') type('image/jpeg')
+    url('../photos/20150512_111554-1200w.avif') type('image/avif'),
+    url('../photos/20150512_111554-1200w.webp') type('image/webp'),
+    url('../photos/20150512_111554-1200w.jpg') type('image/jpeg')
   );
   background-size:cover;background-position:center 30%;
 }

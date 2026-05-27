@@ -4,7 +4,7 @@ Static landing page for Blue Frost Tech industrial refrigeration spare parts.
 
 **Live sites:**
 - GitHub Pages: https://frigoimpianti-srl.github.io/bluefrosttech-page/
-- Production: https://bluefrosttech.com (Namecheap)
+- Production target: https://bluefrosttech.com (GitHub Pages + Cloudflare DNS)
 
 ## Prerequisites
 
@@ -32,28 +32,59 @@ Output is written to `dist/` — static HTML, minified CSS/JS, optimized images,
 
 ## Deploy
 
-### Namecheap (automatic FTP deploy)
+### GitHub Pages (automatic)
 
-1. In Namecheap cPanel → **FTP Accounts**, create or note FTP credentials
-2. Copy `.env.example` to `.env` and fill in `FTP_HOST`, `FTP_USER`, `FTP_PASSWORD`
-3. Run:
+GitHub Pages is the primary deploy target.
+
+Push to `main` and GitHub Actions deploys automatically:
+
+1. `.github/workflows/deploy.yml` installs Node.js 20
+2. runs `npm ci`
+3. runs `npm run build`
+4. uploads `dist/`
+5. publishes the artifact to GitHub Pages
+
+In the GitHub repository settings, keep **Pages -> Build and deployment -> Source** set to **GitHub Actions**.
+
+Local production check:
 
 ```bash
-npm run deploy
+npm run build
+npm run preview
 ```
 
-This builds the site and uploads everything from `dist/` to `public_html/`.
+### Cloudflare DNS for `bluefrosttech.com`
 
-### Namecheap (manual upload)
+Use Cloudflare as the DNS provider, then point the domain to GitHub Pages.
 
-1. Run `npm run build`
-2. Upload **all contents** of `dist/` to `public_html/` via cPanel File Manager
+1. Add `bluefrosttech.com` to Cloudflare.
+2. Copy existing DNS records from Namecheap, especially any email `MX`, `TXT`, `SPF`, `DKIM`, or `DMARC` records.
+3. In Namecheap, change the domain nameservers to the two nameservers assigned by Cloudflare.
+4. In Cloudflare DNS, create these website records:
 
-### GitHub Pages
+| Type | Name | Target/value | Proxy status |
+| --- | --- | --- | --- |
+| `A` | `@` | `185.199.108.153` | DNS only |
+| `A` | `@` | `185.199.109.153` | DNS only |
+| `A` | `@` | `185.199.110.153` | DNS only |
+| `A` | `@` | `185.199.111.153` | DNS only |
+| `AAAA` | `@` | `2606:50c0:8000::153` | DNS only |
+| `AAAA` | `@` | `2606:50c0:8001::153` | DNS only |
+| `AAAA` | `@` | `2606:50c0:8002::153` | DNS only |
+| `AAAA` | `@` | `2606:50c0:8003::153` | DNS only |
+| `CNAME` | `www` | `frigoimpianti-srl.github.io` | DNS only |
 
-Push to `main` — GitHub Actions builds and deploys automatically.
+5. In GitHub, open **Settings -> Pages -> Custom domain**, set `bluefrosttech.com`, save, then enable **Enforce HTTPS** when GitHub makes it available.
 
-Enable in repo settings: **Pages → Source: GitHub Actions**.
+Keep the Cloudflare records as **DNS only** at least until GitHub validates the domain and issues the HTTPS certificate. After that, only enable the Cloudflare proxy if you intentionally want Cloudflare in front of GitHub Pages and have verified redirects and certificate renewal.
+
+### Namecheap FTP fallback
+
+Namecheap FTP deploy is retained only as a rollback path during migration:
+
+```bash
+npm run deploy:namecheap
+```
 
 ## Update content
 
