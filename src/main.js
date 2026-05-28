@@ -23,7 +23,7 @@ window.addEventListener('scroll', function () {
 });
 
 window.sc = function (id) {
-  document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 };
 
 function fieldValue(id) {
@@ -93,6 +93,6 @@ window.send = async function () {
   } catch {
     button.disabled = false;
     button.textContent = originalLabel;
-    alert('Unable to send your request right now. Please try again or email info@bluefrosttech.com.');
+    alert('Unable to send your request right now. Please try again or email sales@bluefrosttech.com.');
   }
 };
