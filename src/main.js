@@ -1,5 +1,8 @@
 import './main.css';
 
+const API_BASE = (import.meta.env.VITE_API_URL ?? 'http://localhost:8383').replace(/\/$/, '');
+const SUCCESS_MESSAGE = '✓ Request received — we will respond within 48 hours';
+
 window.addEventListener('scroll', function () {
   const nav = document.getElementById('navbar');
   const scrolled = window.scrollY > 300;
@@ -23,17 +26,73 @@ window.sc = function (id) {
   document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
 };
 
-window.send = function () {
-  const f = document.getElementById('fn').value.trim();
-  const l = document.getElementById('ln').value.trim();
-  const c = document.getElementById('co').value.trim();
-  const e = document.getElementById('em').value.trim();
-  const m = document.getElementById('ms').value.trim();
-  if (!f || !l || !c || !e || !m) {
+function fieldValue(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function selectedUrgency() {
+  const checked = document.querySelector('input[name="urg"]:checked');
+  return checked ? checked.value : 'standard';
+}
+
+function showSubmitSuccess(button) {
+  button.textContent = SUCCESS_MESSAGE;
+  button.disabled = true;
+}
+
+window.send = async function () {
+  const firstName = fieldValue('fn');
+  const lastName = fieldValue('ln');
+  const company = fieldValue('co');
+  const email = fieldValue('em');
+  const message = fieldValue('ms');
+  const honeypot = fieldValue('website');
+  const button = document.getElementById('sb');
+
+  if (!firstName || !lastName || !company || !email || !message) {
     alert('Please fill in all required fields marked with *.');
     return;
   }
-  const b = document.getElementById('sb');
-  b.textContent = '✓ Request received — we will respond within 48 hours';
-  b.disabled = true;
+
+  if (honeypot) {
+    showSubmitSuccess(button);
+    return;
+  }
+
+  const payload = {
+    firstName,
+    lastName,
+    company,
+    email,
+    phone: fieldValue('ph') || undefined,
+    country: fieldValue('country') || undefined,
+    brand: fieldValue('brand') || undefined,
+    oemCode: fieldValue('oe') || undefined,
+    quantity: fieldValue('qt') || undefined,
+    message,
+    urgency: selectedUrgency(),
+  };
+
+  const originalLabel = button.textContent;
+  button.disabled = true;
+  button.textContent = 'Sending…';
+
+  try {
+    const response = await fetch(`${API_BASE}/public/parts-request`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error('Request failed');
+    }
+
+    showSubmitSuccess(button);
+  } catch {
+    button.disabled = false;
+    button.textContent = originalLabel;
+    alert('Unable to send your request right now. Please try again or email info@bluefrosttech.com.');
+  }
 };
